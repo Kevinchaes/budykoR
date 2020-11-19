@@ -30,6 +30,7 @@ We can use the function `blankBC` to create a blank Budyko Curve plot, which inc
 ```{r}
 library(ggplot2)
 library(budyko)
+library(wesanderson)
 
 blankBC
 blankBC+coord_cartesian(xlim=c(0,3))
@@ -69,3 +70,27 @@ blankBC+
   coord_cartesian(xlim=c(0,5))
 ```
 
+
+```{r}
+#load data
+datos <- read.csv("~/R/Budyko/data/año.csv")
+#set column name to PET.P needed
+names(datos)[6]<-"PET.P"
+
+#fit budyko curve to data
+#set the method and create curve according data dif = mae or nls, rsq, metthod is Fu, Turc-Pike, Wang-Tang
+fit1=budyko_fit(data=datos,method="fu",dif="nls",silent = TRUE)
+
+#simulate budyko curve
+sim1=budyko_sim(fit = fit1)
+
+#Create plot with info above
+
+blankBC+geom_line(data=sim1, col=2)+
+  theme_classic()+
+  geom_point(data=datos, aes(y=AET.P, x=PET.P, color = factor(year)), size = 3, shape=17)+
+  coord_cartesian(xlim=c(0,5))+
+  scale_color_manual(values=wes_palette(n=4, name="Moonrise2"))+
+  theme(legend.title = element_blank(), legend.position = "bottom")
+  
+```
